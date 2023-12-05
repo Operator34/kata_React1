@@ -54,12 +54,14 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "husky": "^8.0.0",
     "lint-staged": "^15.2.0"
   },
-
   "lint-staged": {
     "*.js": [
+      "npm run format",
+      "npm run lint",
       "npm run format"
     ]
   }
