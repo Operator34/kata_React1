@@ -32,10 +32,9 @@
     "eject": "react-scripts eject",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "format":"prettier --write src/**/*.js",
-    "git add":"git add ."
-
-
+    "format": "prettier --write src/**/*.js",
+    "git add": "git add .",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [
@@ -56,20 +55,19 @@
     ]
   },
   "devDependencies": {
-    "husky": "^8.0.3",
+    "husky": "^8.0.0",
     "lint-staged": "^15.2.0"
   },
   "husky": {
-    "hooks":{
-      "pre-commit":"lint-staged"
+    "hooks": {
+      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
-    "*.js":[
+    "*.js": [
       "npm run lint",
       "npm run format",
       "git add"
     ]
   }
 }
-
