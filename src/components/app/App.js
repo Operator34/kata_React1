@@ -24,7 +24,7 @@ class App extends Component {
 
   createTodo(text) {
     return {
-       id: uuidv4(),
+      id: uuidv4(),
       textTask: text,
       taskCreationTime: new Date(),
       completed: false,

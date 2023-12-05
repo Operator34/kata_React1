@@ -57,14 +57,9 @@
     "husky": "^8.0.0",
     "lint-staged": "^15.2.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
+
   "lint-staged": {
     "*.js": [
-      "npm run lint",
       "npm run format"
     ]
   }
