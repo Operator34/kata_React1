@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import './task.css';
 
 class Task extends Component {
+  state = { localStateText: '', secondTimer: 0 };
   static defaultProps = {
     task: {
       id: 'xxx',
@@ -29,11 +30,24 @@ class Task extends Component {
     onToggleEditing: PropTypes.func,
     onToggleCompletedTask: PropTypes.func,
   };
-
-  state = { localStateText: '' };
-
+  componentDidMount() {
+    this.onPlayClick();
+  }
+  componentWillUnmount() {
+    this.onPauseClick();
+  }
+  onPlayClick() {
+    this.interval = setInterval(() => {
+      console.log(new Date());
+      this.setState((prevState) => ({ secondTimer: prevState.secondTimer + 1 }));
+    }, 1000);
+  }
+  onPauseClick() {
+    clearInterval(this.interval);
+  }
   onChange = (e) => {
     this.setState({ localStateText: e.target.value });
+
     e.stopPropagation();
   };
 
@@ -41,11 +55,19 @@ class Task extends Component {
     event.preventDefault();
     this.props.editingTask(this.state.localStateText, id);
   };
-
+  transformTime(second) {
+    const minutes = Math.floor(second / 60);
+    const hours = Math.floor(minutes / 60);
+    const remainingSeconds = second % 60;
+    const remainingMinutes = minutes % 60;
+    return `${hours}:${remainingMinutes < 10 ? '0' : ''}${remainingMinutes}:${
+      remainingSeconds < 10 ? '0' : ''
+    }${remainingSeconds}`;
+  }
   render() {
     const { task, deleteTask, onToggleEditing, onToggleCompletedTask } = this.props;
 
-    const { localStateText } = this.state;
+    const { localStateText, secondTimer } = this.state;
     const formInput = (
       <form
         onSubmit={(event) => {
@@ -68,8 +90,26 @@ class Task extends Component {
         <div className="view" onClick={() => onToggleCompletedTask(task.id)}>
           <input className="toggle" type="checkbox" checked={task.completed} onChange={() => {}} />
           <label>
-            <span className="description">{task.textTask}</span>
-            <span className="created">
+            <span className="title">{task.textTask}</span>
+            <span className="description">
+              <button
+                className="icon icon-play"
+                onClick={(e) => {
+                  this.onPlayClick();
+                  e.stopPropagation();
+                }}
+              ></button>
+              <button
+                className="icon icon-pause"
+                onClick={(e) => {
+                  this.onPauseClick();
+                  e.stopPropagation();
+                }}
+              ></button>
+              {/* {`${task.timer.h}:${task.timer.m}:${task.timer.s}`} */}
+              {this.transformTime(secondTimer)}
+            </span>
+            <span className="description">
               created{' '}
               {formatDistanceToNow(task.taskCreationTime, {
                 includeSeconds: true,

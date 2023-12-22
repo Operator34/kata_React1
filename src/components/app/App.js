@@ -8,19 +8,36 @@ import Footer from '../footer';
 
 class App extends Component {
   state = {
-    todoData: [this.createTodo('Completed task'), this.createTodo('Editing task'), this.createTodo('Active task')],
+    // todoData: [this.createTodo('Completed task'), this.createTodo('Editing task'), this.createTodo('Active task')],
+    todoData: [],
     filteredData: 'all',
   };
 
   addTask = (text) => {
     this.setState(({ todoData }) => {
       const newTask = this.createTodo(text);
-
       return {
         todoData: [...todoData, newTask],
       };
     });
   };
+
+  // componentDidUpdate(prevProps, prevState) {
+  //   const { todoData: prevTodoData } = prevState;
+  //   const { todoData: currentTodoData } = this.state;
+
+  //   if (prevTodoData !== currentTodoData) {
+  //     const newTask = currentTodoData.find((task) => !prevTodoData.some((prevTask) => prevTask.id === task.id));
+  //     console.log(newTask);
+  //     this.interval = setInterval(() => this.startTimer(newTask), 1000);
+  //   }
+  // }
+
+  // startTimer(newTask) {
+  //   this.setState(({ todoData }) => {
+  //     console.log(todoData);
+  //   });
+  // }
 
   createTodo(text) {
     return {
@@ -29,8 +46,21 @@ class App extends Component {
       taskCreationTime: new Date(),
       completed: false,
       editing: false,
+      // secondTimer: 0,
     };
   }
+  // componentDidMount() {
+  //   this.interval = setInterval(this.update, 1000);
+  // }
+  // componentWillUnmount() {
+  //   clearInterval(this.interval);
+  // }
+  // update = () => {
+  //   this.setState(({ todoData }) => {
+  //     const newTodo = todoData.map((el) => ({ ...el, secondTimer: el.secondTimer + 1 }));
+  //     return { todoData: newTodo };
+  //   });
+  // };
 
   taskSelection = (tasks, id, propName, valueTask) => {
     const index = tasks.findIndex((el) => el.id === id);
