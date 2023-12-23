@@ -12,23 +12,25 @@ class App extends Component {
     filteredData: 'all',
   };
 
-  addTask = (text) => {
+  addTask = (text, secondTimer) => {
+    console.log(text, secondTimer);
     this.setState(({ todoData }) => {
-      const newTask = this.createTodo(text);
+      const newTask = this.createTodo(text, secondTimer);
       return {
         todoData: [...todoData, newTask],
       };
     });
   };
 
-  createTodo(text) {
+  createTodo(text, secondTimer) {
+    secondTimer = secondTimer ? secondTimer : 120;
     return {
       id: uuidv4(),
       textTask: text,
       taskCreationTime: new Date(),
       completed: false,
       editing: false,
-      secondTimer: 0,
+      secondTimer: secondTimer,
       isPaused: false,
       saveDate: 0,
     };

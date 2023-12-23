@@ -13,7 +13,7 @@ class Task extends Component {
       taskCreationTime: new Date(),
       completed: false,
       editing: false,
-      secondTimer: 0,
+      secondTimer: 120,
       isPaused: false,
       saveDate: 0,
     },
@@ -55,9 +55,6 @@ class Task extends Component {
   componentWillUnmount() {
     console.log('componentWillUnmount');
     const { todo } = this.state;
-    console.log(todo);
-    const { task } = this.props;
-    console.log(task);
     const newTodo = { ...todo, saveDate: Date.now() };
     if (Object.keys(todo).length !== 0) {
       this.transferSecondTimer(newTodo);
@@ -68,7 +65,7 @@ class Task extends Component {
     console.log('onPlayClick');
     this.interval = setInterval(() => {
       this.setState((prevState) => ({
-        todo: { ...prevState.todo, secondTimer: prevState.todo.secondTimer + 1, isPaused: false },
+        todo: { ...prevState.todo, secondTimer: prevState.todo.secondTimer - 1, isPaused: false },
       }));
     }, 1000);
   }
