@@ -30,7 +30,7 @@ class TaskList extends React.Component {
   };
 
   render() {
-    const { tasks, deleteTask, onToggleCompletedTask, onToggleEditing, editingTask } = this.props;
+    const { tasks, deleteTask, onToggleCompletedTask, onToggleEditing, editingTask, updateSecondTimer } = this.props;
 
     const elements = tasks.map((task) => {
       let className = '';
@@ -50,6 +50,7 @@ class TaskList extends React.Component {
             onToggleEditing={onToggleEditing}
             editingTask={editingTask}
             onToggleCompletedTask={onToggleCompletedTask}
+            updateSecondTimer={updateSecondTimer}
           />
         </li>
       );

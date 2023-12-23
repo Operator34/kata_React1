@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import './task.css';
 
 class Task extends Component {
-  state = { localStateText: '', secondTimer: 0 };
+  state = { todo: {}, localStateText: '' };
+
   static defaultProps = {
     task: {
       id: 'xxx',
@@ -12,6 +13,9 @@ class Task extends Component {
       taskCreationTime: new Date(),
       completed: false,
       editing: false,
+      secondTimer: 0,
+      isPaused: false,
+      saveDate: 0,
     },
     deleteTask: () => {},
     onToggleEditing: () => {},
@@ -25,29 +29,63 @@ class Task extends Component {
       taskCreationTime: PropTypes.instanceOf(Date),
       completed: PropTypes.bool,
       editing: PropTypes.bool,
+      secondTimer: PropTypes.number,
+      isPaused: PropTypes.bool,
+      saveDate: PropTypes.number,
     }),
     deleteTask: PropTypes.func,
     onToggleEditing: PropTypes.func,
     onToggleCompletedTask: PropTypes.func,
+    updateSecondTimer: PropTypes.func,
   };
+
   componentDidMount() {
-    this.onPlayClick();
+    console.log('componentDidMount');
+    const { task } = this.props;
+    const newTask = { ...task };
+    if (newTask.saveDate !== 0 && !newTask.isPaused) {
+      newTask.secondTimer = newTask.secondTimer + Math.round((Date.now() - newTask.saveDate) / 1000);
+    }
+    this.setState({ todo: newTask });
+    if (!newTask.isPaused) {
+      this.setState({ todo: newTask });
+      this.onPlayClick();
+    }
   }
   componentWillUnmount() {
-    this.onPauseClick();
+    console.log('componentWillUnmount');
+    const { todo } = this.state;
+    console.log(todo);
+    const { task } = this.props;
+    console.log(task);
+    const newTodo = { ...todo, saveDate: Date.now() };
+    if (Object.keys(todo).length !== 0) {
+      this.transferSecondTimer(newTodo);
+    }
+    clearInterval(this.interval);
   }
   onPlayClick() {
+    console.log('onPlayClick');
     this.interval = setInterval(() => {
-      console.log(new Date());
-      this.setState((prevState) => ({ secondTimer: prevState.secondTimer + 1 }));
+      this.setState((prevState) => ({
+        todo: { ...prevState.todo, secondTimer: prevState.todo.secondTimer + 1, isPaused: false },
+      }));
     }, 1000);
   }
   onPauseClick() {
+    console.log('onPauseClick task');
     clearInterval(this.interval);
+    this.setState((prevState) => ({
+      todo: { ...prevState.todo, isPaused: true },
+    }));
   }
+  transferSecondTimer = (todo) => {
+    console.log('transferSecond todo');
+    const { updateSecondTimer } = this.props;
+    updateSecondTimer(todo);
+  };
   onChange = (e) => {
     this.setState({ localStateText: e.target.value });
-
     e.stopPropagation();
   };
 
@@ -67,7 +105,8 @@ class Task extends Component {
   render() {
     const { task, deleteTask, onToggleEditing, onToggleCompletedTask } = this.props;
 
-    const { localStateText, secondTimer } = this.state;
+    const { localStateText, todo } = this.state;
+
     const formInput = (
       <form
         onSubmit={(event) => {
@@ -95,19 +134,18 @@ class Task extends Component {
               <button
                 className="icon icon-play"
                 onClick={(e) => {
-                  this.onPlayClick();
+                  this.onPlayClick(task.id);
                   e.stopPropagation();
                 }}
               ></button>
               <button
                 className="icon icon-pause"
                 onClick={(e) => {
-                  this.onPauseClick();
+                  this.onPauseClick(todo);
                   e.stopPropagation();
                 }}
               ></button>
-              {/* {`${task.timer.h}:${task.timer.m}:${task.timer.s}`} */}
-              {this.transformTime(secondTimer)}
+              {this.transformTime(todo.secondTimer)}
             </span>
             <span className="description">
               created{' '}

@@ -8,7 +8,6 @@ import Footer from '../footer';
 
 class App extends Component {
   state = {
-    // todoData: [this.createTodo('Completed task'), this.createTodo('Editing task'), this.createTodo('Active task')],
     todoData: [],
     filteredData: 'all',
   };
@@ -22,23 +21,6 @@ class App extends Component {
     });
   };
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   const { todoData: prevTodoData } = prevState;
-  //   const { todoData: currentTodoData } = this.state;
-
-  //   if (prevTodoData !== currentTodoData) {
-  //     const newTask = currentTodoData.find((task) => !prevTodoData.some((prevTask) => prevTask.id === task.id));
-  //     console.log(newTask);
-  //     this.interval = setInterval(() => this.startTimer(newTask), 1000);
-  //   }
-  // }
-
-  // startTimer(newTask) {
-  //   this.setState(({ todoData }) => {
-  //     console.log(todoData);
-  //   });
-  // }
-
   createTodo(text) {
     return {
       id: uuidv4(),
@@ -46,21 +28,19 @@ class App extends Component {
       taskCreationTime: new Date(),
       completed: false,
       editing: false,
-      // secondTimer: 0,
+      secondTimer: 0,
+      isPaused: false,
+      saveDate: 0,
     };
   }
-  // componentDidMount() {
-  //   this.interval = setInterval(this.update, 1000);
-  // }
-  // componentWillUnmount() {
-  //   clearInterval(this.interval);
-  // }
-  // update = () => {
-  //   this.setState(({ todoData }) => {
-  //     const newTodo = todoData.map((el) => ({ ...el, secondTimer: el.secondTimer + 1 }));
-  //     return { todoData: newTodo };
-  //   });
-  // };
+
+  updateSecondTimer = (task) => {
+    this.setState(({ todoData }) => {
+      const index = todoData.findIndex((el) => el.id === task.id);
+      const newArr = todoData.toSpliced(index, 1, task);
+      return { todoData: newArr };
+    });
+  };
 
   taskSelection = (tasks, id, propName, valueTask) => {
     const index = tasks.findIndex((el) => el.id === id);
@@ -84,6 +64,7 @@ class App extends Component {
   };
 
   deleteTask = (id) => {
+    console.log('delete');
     this.setState(({ todoData }) => {
       const index = todoData.findIndex((el) => id === el.id);
       const newArr = todoData.toSpliced(index, 1);
@@ -154,6 +135,7 @@ class App extends Component {
               onToggleCompletedTask={this.onToggleCompletedTask}
               onToggleEditing={this.onToggleEditing}
               editingTask={this.editingTask}
+              updateSecondTimer={this.updateSecondTimer}
             />
             <Footer
               countActiveTask={countActiveTask}
