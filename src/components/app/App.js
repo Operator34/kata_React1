@@ -13,7 +13,6 @@ class App extends Component {
   };
 
   addTask = (text, secondTimer) => {
-    console.log(text, secondTimer);
     this.setState(({ todoData }) => {
       const newTask = this.createTodo(text, secondTimer);
       return {
@@ -35,12 +34,20 @@ class App extends Component {
       saveDate: 0,
     };
   }
-
-  updateSecondTimer = (task) => {
+  updateSecondTimer = (updatedProperties) => {
     this.setState(({ todoData }) => {
-      const index = todoData.findIndex((el) => el.id === task.id);
-      const newArr = todoData.toSpliced(index, 1, task);
-      return { todoData: newArr };
+      const updatedTodoData = todoData.map((todo) => {
+        if (todo.id === updatedProperties.id) {
+          return {
+            ...todo,
+            secondTimer: updatedProperties.secondTimer,
+            saveDate: updatedProperties.saveDate,
+            isPaused: updatedProperties.isPaused,
+          };
+        }
+        return todo;
+      });
+      return { todoData: updatedTodoData };
     });
   };
 
@@ -66,11 +73,9 @@ class App extends Component {
   };
 
   deleteTask = (id) => {
-    console.log('delete');
-    this.setState(({ todoData }) => {
-      const index = todoData.findIndex((el) => id === el.id);
-      const newArr = todoData.toSpliced(index, 1);
-      return { todoData: newArr };
+    this.setState((prevState) => {
+      const updatedTodoData = prevState.todoData.filter((el) => el.id !== id);
+      return { todoData: updatedTodoData };
     });
   };
 

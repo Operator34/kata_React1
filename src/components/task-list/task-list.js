@@ -6,26 +6,29 @@ import './task-list.css';
 
 class TaskList extends React.Component {
   static defaultProps = {
-    tasks: [
-      {
-        id: 'xxx',
-        textTask: 'Список дел не пришел с сервера',
-        taskCreationTime: new Date(),
-        completed: false,
-        editing: false,
-      },
-    ],
+    task: {
+      id: 'xxx',
+      textTask: 'Список дел не пришел с сервера',
+      taskCreationTime: new Date(),
+      completed: false,
+      editing: false,
+      secondTimer: 0,
+      isPaused: false,
+      saveDate: 0,
+    },
     deleteTask: () => {},
-    onToggleCompletedTask: () => {},
     onToggleEditing: () => {},
+    onToggleCompletedTask: () => {},
     editingTask: () => {},
+    updateSecondTimer: () => {},
   };
 
   static propTypes = {
     tasks: PropTypes.arrayOf(PropTypes.object),
     deleteTask: PropTypes.func,
-    onToggleCompletedTask: PropTypes.func,
     onToggleEditing: PropTypes.func,
+    onToggleCompletedTask: PropTypes.func,
+    updateSecondTimer: PropTypes.func,
     editingTask: PropTypes.func,
   };
 
