@@ -13,12 +13,14 @@ class App extends Component {
   };
 
   addTask = (text, secondTimer) => {
-    this.setState(({ todoData }) => {
-      const newTask = this.createTodo(text, secondTimer);
-      return {
-        todoData: [...todoData, newTask],
-      };
-    });
+    if (text) {
+      this.setState(({ todoData }) => {
+        const newTask = this.createTodo(text, secondTimer);
+        return {
+          todoData: [...todoData, newTask],
+        };
+      });
+    }
   };
 
   createTodo(text, secondTimer) {
