@@ -22,7 +22,7 @@ class App extends Component {
   };
 
   createTodo(text, secondTimer) {
-    secondTimer = secondTimer ? secondTimer : 120;
+    secondTimer = secondTimer ? secondTimer : 0;
     return {
       id: uuidv4(),
       textTask: text,

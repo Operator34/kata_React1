@@ -70,23 +70,27 @@ class Task extends Component {
   }
 
   onPlayClick() {
-    this.interval = setInterval(() => {
-      const { secondTimer } = this.state;
-      if (secondTimer < 1) {
-        clearInterval(this.interval);
-      }
-      if (secondTimer > 0) {
-        this.setState((prevState) => ({
-          secondTimer: prevState.secondTimer - 1,
-          isPaused: false,
-        }));
-      }
-    }, 1000);
+    console.log('onPlayClick');
+    if (!this.state.timer) {
+      this.interval = setInterval(() => {
+        const { secondTimer } = this.state;
+        if (secondTimer < 1) {
+          clearInterval(this.interval);
+        }
+        if (secondTimer > 0) {
+          this.setState((prevState) => ({
+            secondTimer: prevState.secondTimer - 1,
+            isPaused: false,
+            timer: true,
+          }));
+        }
+      }, 1000);
+    }
   }
 
   onPauseClick() {
     clearInterval(this.interval);
-    this.setState({ isPaused: true });
+    this.setState({ isPaused: true, timer: false });
   }
 
   transferSecondTimer = (todo) => {

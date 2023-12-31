@@ -16,14 +16,21 @@ class NewTaskForm extends React.Component {
 
   state = { text: '', min: '', sec: '' };
 
+  validator = (value) => {};
   onChangeText = (e) => {
     this.setState({ text: e.target.value });
   };
   onChangeMin = (e) => {
-    this.setState({ min: e.target.value });
+    const value = e.target.value;
+    if (!isNaN(value)) {
+      this.setState({ min: value });
+    }
   };
   onChangeSec = (e) => {
-    this.setState({ sec: e.target.value });
+    const value = e.target.value;
+    if (!isNaN(value)) {
+      this.setState({ sec: value });
+    }
   };
   onKeyPress = (e) => {
     if (e.key === 'Enter') {
