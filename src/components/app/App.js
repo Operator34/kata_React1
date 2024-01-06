@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import './App.css';
@@ -6,24 +6,22 @@ import NewTaskForm from '../new-task-form';
 import TaskList from '../task-list';
 import Footer from '../footer';
 
-class App extends Component {
-  state = {
+const App = () => {
+  const [state, setState] = useState({
     todoData: [],
     filteredData: 'all',
-  };
+  });
 
-  addTask = (text, secondTimer) => {
+  const addTask = (text, secondTimer) => {
     if (text) {
-      this.setState(({ todoData }) => {
-        const newTask = this.createTodo(text, secondTimer);
-        return {
-          todoData: [...todoData, newTask],
-        };
+      setState(({ todoData }) => {
+        const newTask = createTodo(text, secondTimer);
+        return { ...state, todoData: [...todoData, newTask] };
       });
     }
   };
 
-  createTodo(text, secondTimer) {
+  const createTodo = (text, secondTimer) => {
     secondTimer = secondTimer ? secondTimer : 0;
     return {
       id: uuidv4(),
@@ -32,12 +30,47 @@ class App extends Component {
       completed: false,
       editing: false,
       secondTimer: secondTimer,
-      isPaused: false,
+      isPaused: true,
       saveDate: 0,
     };
-  }
-  updateSecondTimer = (updatedProperties) => {
-    this.setState(({ todoData }) => {
+  };
+
+  const changePaused = (id, status) => {
+    setState((prev) => {
+      const newObj = { ...prev, todoData: [...prev.todoData] };
+      newObj.todoData.filter((el) => id === el.id)[0].isPaused = status;
+      return newObj;
+    });
+  };
+
+  useEffect(() => {
+    localStorage.setItem('starttimer', Date.now());
+    const endTime = Number(localStorage.getItem('endtimer'));
+    const StartTime = Number(localStorage.getItem('starttimer'));
+    const delay = (StartTime - endTime) / 1000;
+    const timeout = setTimeout(() => {
+      setState((prev) => {
+        const todoData = prev.todoData.map((element) => {
+          if (element.secondTimer <= 0) {
+            element.isPaused = true;
+            element.secondTimer = 0;
+          }
+          if (!element.isPaused) {
+            element.secondTimer -= delay;
+          }
+          return { ...element };
+        });
+        return { ...prev, todoData: [...todoData] };
+      });
+    }, 1000);
+    localStorage.setItem('endtimer', Date.now());
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [state]);
+
+  const updateSecondTimer = (updatedProperties) => {
+    setState(({ todoData }) => {
       const updatedTodoData = todoData.map((todo) => {
         if (todo.id === updatedProperties.id) {
           return {
@@ -49,11 +82,11 @@ class App extends Component {
         }
         return todo;
       });
-      return { todoData: updatedTodoData };
+      return { ...state, todoData: updatedTodoData };
     });
   };
 
-  taskSelection = (tasks, id, propName, valueTask) => {
+  const taskSelection = (tasks, id, propName, valueTask) => {
     const index = tasks.findIndex((el) => el.id === id);
     let newValueTask = valueTask;
     const oldEl = tasks[index];
@@ -67,32 +100,32 @@ class App extends Component {
     return newArr;
   };
 
-  onToggleCompletedTask = (id) => {
-    this.setState(({ todoData }) => {
-      const newArr = this.taskSelection(todoData, id, 'completed');
-      return { todoData: newArr };
+  const onToggleCompletedTask = (id) => {
+    setState(({ todoData }) => {
+      const newArr = taskSelection(todoData, id, 'completed');
+      return { ...state, todoData: newArr };
     });
   };
 
-  deleteTask = (id) => {
-    this.setState((prevState) => {
+  const deleteTask = (id) => {
+    setState((prevState) => {
       const updatedTodoData = prevState.todoData.filter((el) => el.id !== id);
-      return { todoData: updatedTodoData };
+      return { ...state, todoData: updatedTodoData };
     });
   };
 
-  clearCompleted = () => {
-    this.setState(({ todoData }) => {
+  const clearCompleted = () => {
+    setState(({ todoData }) => {
       const newArr = todoData.filter((el) => !el.completed);
-      return { todoData: newArr };
+      return { ...state, todoData: newArr };
     });
   };
 
-  filtred = (status) => {
-    this.setState({ filteredData: status });
+  const filtred = (status) => {
+    setState({ ...state, filteredData: status });
   };
 
-  onToggleFilter = (filterName, items) => {
+  const onToggleFilter = (filterName, items) => {
     switch (filterName) {
       case 'all':
         return items;
@@ -107,57 +140,54 @@ class App extends Component {
     }
   };
 
-  onToggleEditing = (id) => {
-    this.setState(({ todoData }) => {
-      const newArr = this.taskSelection(todoData, id, 'editing');
-      return { todoData: newArr };
+  const onToggleEditing = (id) => {
+    setState(({ todoData }) => {
+      const newArr = taskSelection(todoData, id, 'editing');
+      return { ...state, todoData: newArr };
     });
   };
 
-  editingTask = (newTextTask, id) => {
-    this.setState(({ todoData }) => {
-      const newArr = this.taskSelection(todoData, id, 'textTask', newTextTask);
-      return { todoData: newArr };
+  const editingTask = (newTextTask, id) => {
+    setState(({ todoData }) => {
+      const newArr = taskSelection(todoData, id, 'textTask', newTextTask);
+      return { ...state, todoData: newArr };
     });
-    this.onToggleEditing(id);
+    onToggleEditing(id);
   };
 
-  render() {
-    const { todoData, filteredData } = this.state;
+  const countCompletedTask = state.todoData.filter((el) => el.completed).length;
+  const actualTodo = onToggleFilter(state.filteredData, state.todoData);
+  const countActiveTask = state.todoData.length - countCompletedTask;
 
-    const countCompletedTask = this.state.todoData.filter((el) => el.completed).length;
-    const actualTodo = this.onToggleFilter(filteredData, todoData);
-    const countActiveTask = todoData.length - countCompletedTask;
-
-    return (
-      <div className="App">
-        {/* <body> */}
-        <section className="todoapp">
-          <header className="header">
-            <h1>todos</h1>
-            <NewTaskForm addTask={this.addTask} />
-          </header>
-          <section className="main">
-            <TaskList
-              tasks={actualTodo}
-              deleteTask={this.deleteTask}
-              onToggleCompletedTask={this.onToggleCompletedTask}
-              onToggleEditing={this.onToggleEditing}
-              editingTask={this.editingTask}
-              updateSecondTimer={this.updateSecondTimer}
-            />
-            <Footer
-              countActiveTask={countActiveTask}
-              clearCompleted={this.clearCompleted}
-              filtred={this.filtred}
-              filteredData={filteredData}
-            />
-          </section>
+  return (
+    <div className="App">
+      {/* <body> */}
+      <section className="todoapp">
+        <header className="header">
+          <h1>todos</h1>
+          <NewTaskForm addTask={addTask} />
+        </header>
+        <section className="main">
+          <TaskList
+            tasks={actualTodo}
+            deleteTask={deleteTask}
+            onToggleCompletedTask={onToggleCompletedTask}
+            onToggleEditing={onToggleEditing}
+            editingTask={editingTask}
+            updateSecondTimer={updateSecondTimer}
+            onChangePaused={changePaused}
+          />
+          <Footer
+            countActiveTask={countActiveTask}
+            clearCompleted={clearCompleted}
+            filtred={filtred}
+            filteredData={state.filteredData}
+          />
         </section>
-        {/* </body> */}
-      </div>
-    );
-  }
-}
+      </section>
+      {/* </body> */}
+    </div>
+  );
+};
 
 export default App;
